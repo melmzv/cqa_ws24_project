@@ -1,4 +1,4 @@
-# Accounting Reading Group - Assignment III: Earnings Management and Investor Protection
+# Corporate Decision-Making and Quantitative Analysis - Assignment I: Audit market concentration in the EU
 
 ## Adopting the Open Science Workflow and TRR 266 Template for Reproducible Empirical Accounting Research 
 
