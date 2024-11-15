@@ -1,0 +1,66 @@
+dyn_vars:
+    - item6105  # Worldscope Permanent ID
+    - year_     # Year
+    - item5350  # Fiscal Period End Date
+    - item2003  # Cash ***
+    - item3051  # Short Term Debt and Current Portion of Long Term Debt ***
+    - item3063  # Income Taxes Payable ***
+    - item1151  # Depreciation, depletion, and amortization item (from IS) used as sum provided by https://wrds-www.wharton.upenn.edu/documents/526/Worldscope_Balancing_Model_-_Industrials.xls ***
+    - item2999  # Total Assets ***
+    - item1001  # Net Sales or Revenues ***
+    - item1250  # Operating Income ***
+    - item1651  # NET INCOME BEFORE PREFERRED DIVIDENDS; net earnings ***
+    - item3101  # Current Liabilities - Total ***
+    - item2201  # Current Assets - Total ***
+
+stat_vars:
+    - item6105  # Worldscope Permanent ID
+    - item6001  # Company Name
+    - item6100  # Entity Type
+    - item6026  # Country Code
+    - item7021  # SIC Code
+
+cs_filter: freq='A' and year_>=1990 and year_<=1999  # Filter for year range as given in the paper, and annual frequency based on Worldscope-specific Identifier advice
+
+included_countries: 
+    - 'AUSTRIA'
+    - 'GREECE'
+    - 'KOREA (SOUTH)'
+    - 'PORTUGAL'
+    - 'ITALY'
+    - 'TAIWAN'
+    - 'SWITZERLAND'
+    - 'SINGAPORE'
+    - 'GERMANY'
+    - 'JAPAN'
+    - 'BELGIUM'
+    - 'HONG KONG'
+    - 'INDIA'
+    - 'SPAIN'
+    - 'INDONESIA'
+    - 'THAILAND'
+    - 'PAKISTAN'
+    - 'NETHERLANDS'
+    - 'DENMARK'
+    - 'MALAYSIA'
+    - 'FRANCE'
+    - 'FINLAND'
+    - 'PHILIPPINES'
+    - 'UNITED KINGDOM'
+    - 'SWEDEN'
+    - 'NORWAY'
+    - 'SOUTH AFRICA'
+    - 'CANADA'
+    - 'IRELAND'
+    - 'AUSTRALIA'
+    - 'UNITED STATES'
+
+excluded_countries:
+    - 'ARGENTINA'
+    - 'BRAZIL'
+    - 'MEXICO'
+    - 'CHILE'
+    - 'NEW ZEALAND'
+    - 'TURKEY'
+
+worldscope_sample_save_path: 'data/pulled/financial_data.csv'

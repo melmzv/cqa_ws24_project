@@ -1,7 +1,7 @@
 # --- Header -------------------------------------------------------------------
 # See LICENSE file for details
 #
-# This code pulls data from WRDS Audit Analytics Database
+# This code pulls data from WRDS Audit Analytics Database 
 # ------------------------------------------------------------------------------
 import os
 from getpass import getpass
