@@ -1,9 +1,8 @@
 # --- Header -------------------------------------------------------------------
 # See LICENSE file for details
 #
-# This code pulls data from WRDS Audit Europe Database for Figure 3 replication
+# This code pulls data from WRDS Audit Analytics Database 
 # ------------------------------------------------------------------------------
-
 import os
 from getpass import getpass
 import dotenv
