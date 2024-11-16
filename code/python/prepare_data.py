@@ -8,6 +8,7 @@ import pandas as pd
 from utils import read_config, setup_logging
 
 log = setup_logging()
+
 def main():
     log.info("Preparing data for analysis ...")
     cfg = read_config('config/prepare_data_cfg.yaml')
@@ -22,6 +23,9 @@ def main():
     missing_networks = transparency_data['auditor_network'].value_counts().get('Other (Blank)', 0)
     log.info(f"Number of observations with missing Auditor Network: {missing_networks}")
 
+    # Map duplicate auditor networks to standardized names
+    transparency_data = standardize_auditor_network_names(transparency_data)
+
     # Map auditor networks into groups
     transparency_data = map_auditor_networks(transparency_data)
 
@@ -31,9 +35,22 @@ def main():
 
     log.info("Preparing data for analysis ... Done!")
 
+def standardize_auditor_network_names(df):
+    """
+    Standardize duplicate auditor network names to a single name.
+    """
+    duplicate_map = {
+        '|Mazars Worldwide|Praxity Global Alliance|': '|Mazars Worldwide|',
+        '|Praxity Global Alliance|TALENZ International|': '|Praxity Global Alliance|',
+        '|Morison KSi|': '|Morison International|'
+    }
+    df['auditor_network'] = df['auditor_network'].replace(duplicate_map)
+    log.info(f"Auditor Network names standardized: {duplicate_map}")
+    return df
+
 def map_auditor_networks(df):
     """
-    Map auditor networks into Big Four, 10KAP (includes Big Four firms), Unaffiliated (not subset of BIG 4 and 10KAP), and Other (Blank).
+    Group auditor networks into Big Four, 10KAP (includes Big Four firms), Unaffiliated (not subset of BIG 4 and 10KAP), and Other (Blank).
     """
     # Define Big Four firms
     big4 = [
