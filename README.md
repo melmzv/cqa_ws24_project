@@ -107,8 +107,8 @@ To start a new reproducible project on earnings management and investor protecti
 > [!TIP]
 > In case you need to work with additional variables other than stated in this project, I recommend using the Excel template [Worldscope Balancing Model - Industrials](https://wrds-www.wharton.upenn.edu/documents/526/Worldscope_Balancing_Model_-_Industrials.xls) that gives a visual overview of variables placement in Balance Sheet, Income Statement and Cash Flow Statement.
 
-> [!TIP] :woman_technologist:
-> Another quite fresh tip to synchronise vertical or horizontal scrolling in splitted view in VS Code. To engage it, type in the Command Palette the action name: 'Toggle Locked Scrolling Across Editors'. It is very useful if you are aligning the config file with the according python file, for example.
+> [!TIP] 
+> Another quite fresh tip to synchronise vertical or horizontal scrolling in splitted view in VS Code. To engage it, type in the Command Palette the action name: 'Toggle Locked Scrolling Across Editors'. It is very useful if you are aligning the config file with the according python file, for example. :woman_technologist:
 
 ### Licensing
 
