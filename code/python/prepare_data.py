@@ -18,6 +18,10 @@ def main():
     initial_obs_count = len(transparency_data)
     log.info(f"Initial number of observations after pulling data: {initial_obs_count}")
 
+    # Check and handle blank values in vital fields
+    vital_fields = ['transparency_report_fkey', 'entity_map_fkey', 'auditor_fkey', 'trans_report_auditor_state']
+    transparency_data = check_and_handle_blanks(transparency_data, vital_fields)
+
     # Handle missing Auditor Network values
     transparency_data['auditor_network'] = transparency_data['auditor_network'].fillna('Other (Blank)')
     missing_networks = transparency_data['auditor_network'].value_counts().get('Other (Blank)', 0)
@@ -34,6 +38,20 @@ def main():
     log.info(f"Prepared data saved to {cfg['prepared_data_save_path']}")
 
     log.info("Preparing data for analysis ... Done!")
+
+def check_and_handle_blanks(df, fields):
+    """
+    Check for blank values in specified fields and remove rows with blanks.
+    """
+    initial_count = len(df)
+    for field in fields:
+        blank_count = df[field].isnull().sum()
+        if blank_count > 0:
+            log.warning(f"Found {blank_count} blank values in '{field}'. These rows will be dropped.")
+            df = df[df[field].notnull()]
+    final_count = len(df)
+    log.info(f"Rows removed due to blank values: {initial_count - final_count}")
+    return df
 
 def standardize_auditor_network_names(df):
     """
