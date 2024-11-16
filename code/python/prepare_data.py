@@ -8,7 +8,6 @@ import pandas as pd
 from utils import read_config, setup_logging
 
 log = setup_logging()
-
 def main():
     log.info("Preparing data for analysis ...")
     cfg = read_config('config/prepare_data_cfg.yaml')
@@ -21,6 +20,9 @@ def main():
     # Check and handle blank values in vital fields
     vital_fields = ['transparency_report_fkey', 'entity_map_fkey', 'auditor_fkey', 'trans_report_auditor_state']
     transparency_data = check_and_handle_blanks(transparency_data, vital_fields)
+
+    # Ensure rows with NUMBER_OF_DISCLOSED_PIES > 0
+    transparency_data = filter_disclosed_pies(transparency_data)
 
     # Check for duplicates in entity_map_fkey
     check_for_joint_audits(transparency_data)
@@ -55,6 +57,21 @@ def check_and_handle_blanks(df, fields):
     final_count = len(df)
     log.info(f"Rows removed due to blank values: {initial_count - final_count}")
     return df
+
+
+def filter_disclosed_pies(df):
+    """
+    Ensure that only rows with NUMBER_OF_DISCLOSED_PIES > 0 are included.
+    """
+    initial_count = len(df)
+    df = df[df['number_of_disclosed_pies'] > 0]
+    filtered_count = initial_count - len(df)
+    if filtered_count > 0:
+        log.info(f"{filtered_count} rows were filtered out because NUMBER_OF_DISCLOSED_PIES <= 0.")
+    else:
+        log.info("No rows were filtered out based on NUMBER_OF_DISCLOSED_PIES.")
+    return df
+
 
 def check_for_joint_audits(df):
     """
