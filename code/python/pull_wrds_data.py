@@ -24,7 +24,7 @@ def main():
     cfg = read_config('config/pull_data_cfg.yaml')
     wrds_login = get_wrds_login()
     wrds_data = pull_wrds_data(cfg, wrds_login)
-    wrds_data.to_csv(cfg['output_save_path'], index=False)
+    wrds_data.to_csv(cfg['audit_analytics_save_path'], index=False)
 
 
 def get_wrds_login():
@@ -52,9 +52,8 @@ def pull_wrds_data(cfg, wrds_authentication):
 
     log.info('Logged on to WRDS ...')
 
-    # Select only the required variables for Transparency Report
+    # Select only the required variables from Transparency Reports
     selected_vars_str = ', '.join(cfg['selected_vars'])
-    
     # Apply filter for 2021 and specific countries
     country_filter = ', '.join([f"'{country}'" for country in cfg['included_countries']])
     query = f"""

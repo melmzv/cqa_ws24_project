@@ -1,14 +1,14 @@
 # Selected variables for pulling data based on requirements for Figure 3
 selected_vars:
-    - TRANSPARENCY_REPORT_FKEY       # Unique identifier for each Transparency Report
-    - ENTITY_MAP_FKEY                # Identifier for each company
-    - AUDITOR_FKEY                   # Unique numeric identifier for each audit firm
-    - TRANS_REPORT_AUDITOR_STATE     # ISO code for the country of the auditor
-    - AUDITOR_NETWORK                # Name of the auditor network (for grouping and filtration)
-    - REPORT_YEAR                    # Fiscal year of the Transparency Report, filtered for 2021
-    - NUMBER_OF_DISCLOSED_PIES       # Number of PIEs audited by each firm
+    - TRANSPARENCY_REPORT_FKEY       # Unique numeric identifier assigned by Audit Analytics to each Transparency Report. 
+    - ENTITY_MAP_FKEY                # Unique numeric identifier assigned to each entity by Audit Analytics.
+    - AUDITOR_FKEY                   # Unique numeric identifier assigned by Audit Analytics for each audit firm.
+    - TRANS_REPORT_AUDITOR_STATE     # Iso code of country Auditor is located in.
+    - AUDITOR_NETWORK                # Name of the auditor network, alliance, or association, where applicable, corresponding to Auditor Name or Auditor Affiliate Name (for grouping and filtration).
+    - REPORT_YEAR                    # Fiscal year of the Transparency Report, filtered for 2021 for replication.
+    - NUMBER_OF_DISCLOSED_PIES       # Number of PIE entities audited in each Transparency Report.
 
-# Country filters as in Figure 3
+# Filter countries as in Figure 3
 included_countries:
     - 'DK'  # Denmark
     - 'CY'  # Cyprus
@@ -41,5 +41,4 @@ included_countries:
 
 cs_filter: REPORT_YEAR=2021  # Only include records with REPORT_YEAR equal to fiscal year 2021
 
-# Output file path for saving the data
-output_save_path: 'data/pulled/transparency_report_data_2021.csv'
+audit_analytics_save_path: 'data/pulled/transparency_report_data_2021.csv'
