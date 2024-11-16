@@ -22,6 +22,9 @@ def main():
     vital_fields = ['transparency_report_fkey', 'entity_map_fkey', 'auditor_fkey', 'trans_report_auditor_state']
     transparency_data = check_and_handle_blanks(transparency_data, vital_fields)
 
+    # Check for duplicates in entity_map_fkey
+    check_for_joint_audits(transparency_data)
+
     # Handle missing Auditor Network values
     transparency_data['auditor_network'] = transparency_data['auditor_network'].fillna('Other (Blank)')
     missing_networks = transparency_data['auditor_network'].value_counts().get('Other (Blank)', 0)
@@ -52,6 +55,16 @@ def check_and_handle_blanks(df, fields):
     final_count = len(df)
     log.info(f"Rows removed due to blank values: {initial_count - final_count}")
     return df
+
+def check_for_joint_audits(df):
+    """
+    Check for duplicates in entity_map_fkey to identify potential joint audits.
+    """
+    duplicate_count = df['entity_map_fkey'].duplicated().sum()
+    if duplicate_count > 0:
+        log.warning(f"Potential joint audits detected: {duplicate_count} entities appear in multiple transparency reports.")
+    else:
+        log.info("No potential joint audits detected. Each entity is unique in the dataset.")
 
 def standardize_auditor_network_names(df):
     """
