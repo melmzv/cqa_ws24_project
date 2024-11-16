@@ -1,3 +1,2 @@
 audit_analytics_save_path: 'data/pulled/transparency_report_data_2021.csv'
 prepared_data_save_path: 'data/generated/prepared_transparency_data.csv'
-table_1_save_path: 'data/generated/auditor_summary_table.pickle'

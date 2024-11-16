@@ -5,11 +5,9 @@
 # ------------------------------------------------------------------------------
 
 import pandas as pd
-import pickle
 from utils import read_config, setup_logging
 
 log = setup_logging()
-
 def main():
     log.info("Preparing data for analysis ...")
     cfg = read_config('config/prepare_data_cfg.yaml')
@@ -30,16 +28,6 @@ def main():
     # Save the prepared dataset
     transparency_data.to_csv(cfg['prepared_data_save_path'], index=False)
     log.info(f"Prepared data saved to {cfg['prepared_data_save_path']}")
-
-    # Generate summary table for Auditor Networks
-    summary_table = transparency_data.groupby('network_group').size().reset_index(name='# Audits')
-    summary_table.columns = ['Network Group', '# Audits']
-    summary_table = summary_table.sort_values(by='# Audits', ascending=False)
-
-    # Save summary table
-    with open(cfg['table_1_save_path'], 'wb') as f:
-        pickle.dump({"summary_table": summary_table}, f)
-    log.info(f"Summary table saved to {cfg['table_1_save_path']}")
 
     log.info("Preparing data for analysis ... Done!")
 
