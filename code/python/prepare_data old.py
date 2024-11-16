@@ -1,5 +1,5 @@
 # --- Header -------------------------------------------------------------------
-# Prepare the pulled data for further analysis as per the requirements by EC Report (2024)
+# Prepare the pulled data for further analysis as per the requirements by Leuz et al.
 #
 # (C) Melisa Mazaeva -  See LICENSE file for details
 # ------------------------------------------------------------------------------
