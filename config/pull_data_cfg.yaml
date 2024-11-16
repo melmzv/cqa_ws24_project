@@ -11,34 +11,34 @@ selected_vars:
 
 # Country filters
 included_countries:
-    - DK  # Denmark
-    - CY  # Cyprus
-    - FI  # Finland
-    - SE  # Sweden
-    - LU  # Luxembourg
-    - BE  # Belgium
-    - EE  # Estonia
-    - AT  # Austria
-    - NO  # Norway
-    - NL  # Netherlands
-    - IT  # Italy
-    - ES  # Spain
-    - IE  # Ireland
-    - DE  # Germany
-    - MT  # Malta
-    - LT  # Lithuania
-    - HU  # Hungary
-    - LV  # Latvia
-    - CZ  # Czech Republic
-    - HR  # Croatia
-    - SI  # Slovenia
-    - SK  # Slovakia
-    - FR  # France
-    - PL  # Poland
-    - PT  # Portugal
-    - EL  # Greece
-    - RO  # Romania
-    - BG  # Bulgaria
+    - 'DK'  # Denmark
+    - 'CY'  # Cyprus
+    - 'FI'  # Finland
+    - 'SE'  # Sweden
+    - 'LU'  # Luxembourg
+    - 'BE'  # Belgium
+    - 'EE'  # Estonia
+    - 'AT'  # Austria
+    - 'NO'  # Norway
+    - 'NL'  # Netherlands
+    - 'IT'  # Italy
+    - 'ES'  # Spain
+    - 'IE'  # Ireland
+    - 'DE'  # Germany
+    - 'MT'  # Malta
+    - 'LT'  # Lithuania
+    - 'HU'  # Hungary
+    - 'LV'  # Latvia
+    - 'CZ'  # Czech Republic
+    - 'HR'  # Croatia
+    - 'SI'  # Slovenia
+    - 'SK'  # Slovakia
+    - 'FR'  # France
+    - 'PL'  # Poland
+    - 'PT'  # Portugal
+    - 'EL'  # Greece
+    - 'RO'  # Romania
+    - 'BG'  # Bulgaria
 
 # Filter for fiscal year 2021
 cs_filter: REPORT_YEAR=2021  # Only include records with REPORT_YEAR equal to 2021
