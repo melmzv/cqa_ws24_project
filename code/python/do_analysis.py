@@ -229,9 +229,17 @@ def plot_market_shares(market_shares, save_path):
     fig, ax = plt.subplots(figsize=(14, 7))
 
     # Add bars with appropriate colors
-    ax.bar(x, big4, width=bar_width, label='Big 4', color='darkblue', align='center')
-    ax.bar([i + bar_width for i in x], cr4, width=bar_width, label='CR4', color='lightblue', align='center')
-    ax.bar([i + 2 * bar_width for i in x], kap10, width=bar_width, label='10KAP', color='gray', align='center')
+    for i, country in enumerate(countries):
+        if country == 'EU':
+            # Highlight EU with red color
+            ax.bar(i, big4.iloc[i], width=bar_width, color='darkred', align='center')
+            ax.bar(i + bar_width, cr4.iloc[i], width=bar_width, color='red', align='center')
+            ax.bar(i + 2 * bar_width, kap10.iloc[i], width=bar_width, color='lightcoral', align='center')
+        else:
+            # Default colors for other countries
+            ax.bar(i, big4.iloc[i], width=bar_width, color='darkblue', align='center')
+            ax.bar(i + bar_width, cr4.iloc[i], width=bar_width, color='lightblue', align='center')
+            ax.bar(i + 2 * bar_width, kap10.iloc[i], width=bar_width, color='gray', align='center')
 
     # Add labels, title, and legend
     ax.set_xlabel('Country', fontsize=12)
