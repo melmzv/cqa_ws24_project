@@ -1,4 +1,4 @@
----
+--- ## Not rendered in this project; to be used as draft
 title: |
   | Earnings Management and Investor Protection:
   | Accounting Reading Group - Assignment III
