@@ -231,15 +231,15 @@ def plot_market_shares(market_shares, save_path):
     # Add bars with appropriate colors
     for i, country in enumerate(countries):
         if country == 'EU':
-            # Highlight EU with red color
-            ax.bar(i, big4.iloc[i], width=bar_width, color='darkred', align='center')
-            ax.bar(i + bar_width, cr4.iloc[i], width=bar_width, color='red', align='center')
-            ax.bar(i + 2 * bar_width, kap10.iloc[i], width=bar_width, color='lightcoral', align='center')
+            # Highlight EU with different red shades
+            ax.bar(i, big4.iloc[i], width=bar_width, color='darkred', align='center', label='Big 4 (EU)' if i == 0 else "")
+            ax.bar(i + bar_width, cr4.iloc[i], width=bar_width, color='red', align='center', label='CR4 (EU)' if i == 0 else "")
+            ax.bar(i + 2 * bar_width, kap10.iloc[i], width=bar_width, color='lightcoral', align='center', label='10KAP (EU)' if i == 0 else "")
         else:
             # Default colors for other countries
-            ax.bar(i, big4.iloc[i], width=bar_width, color='darkblue', align='center')
-            ax.bar(i + bar_width, cr4.iloc[i], width=bar_width, color='lightblue', align='center')
-            ax.bar(i + 2 * bar_width, kap10.iloc[i], width=bar_width, color='gray', align='center')
+            ax.bar(i, big4.iloc[i], width=bar_width, color='darkblue', align='center', label='Big 4' if i == 0 else "")
+            ax.bar(i + bar_width, cr4.iloc[i], width=bar_width, color='lightblue', align='center', label='CR4' if i == 0 else "")
+            ax.bar(i + 2 * bar_width, kap10.iloc[i], width=bar_width, color='gray', align='center', label='10KAP' if i == 0 else "")
 
     # Add labels, title, and legend
     ax.set_xlabel('Country', fontsize=12)
@@ -247,9 +247,8 @@ def plot_market_shares(market_shares, save_path):
     ax.set_title("Replication of Figure 3: Audit Firms' Market Share in Number of PIE Statutory Audits (2021)", fontsize=14)
     ax.set_xticks([i + bar_width for i in x])
     ax.set_xticklabels(countries, rotation=90)
-    ax.legend()
-
-    # Position the legend below the graph
+    
+    # Define legend below the graph
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fancybox=True, shadow=True, ncol=3)
     
     # Save the figure
