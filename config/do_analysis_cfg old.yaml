@@ -1,0 +1,2 @@
+prepared_data_save_path: 'data/generated/financial_data_prepared.csv'
+results: output/em_results.pickle
