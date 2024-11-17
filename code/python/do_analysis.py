@@ -206,27 +206,40 @@ def save_market_shares(df, save_path):
 
 def plot_market_shares(market_shares, save_path):
     """
-    Create a bar chart for Big 4, CR4, and 10KAP market shares by country (including EU).
+    Create a patterned bar chart for Big 4, CR4, and 10KAP market shares by country (including EU).
     """
-    # Sort by country, placing EU at the end for clarity
-    market_shares = market_shares.sort_values(by='trans_report_auditor_state', key=lambda col: col != 'EU')
-
+    # Sort the market shares to match the desired country order
+    countries_order = ['DK', 'CY', 'FI', 'SE', 'LU', 'BE', 'EE', 'AT', 'NO', 'NL', 'IT', 
+                       'ES', 'IE', 'DE', 'MT', 'LT', 'HU', 'EU', 'LV', 'CZ', 'HR', 'SI', 
+                       'SK', 'FR', 'PL', 'PT', 'EL', 'RO', 'BG']
+    market_shares['sort_order'] = market_shares['trans_report_auditor_state'].apply(lambda x: countries_order.index(x))
+    market_shares = market_shares.sort_values(by='sort_order')
+    
     # Extract data for plotting
     countries = market_shares['trans_report_auditor_state']
     big4 = market_shares['big4_market_share']
     cr4 = market_shares['cr4_market_share']
     kap10 = market_shares['kap10_market_share']
     
-    # Plot settings
+    # Define bar width and x-coordinates
     x = range(len(countries))
     bar_width = 0.25
 
+    # Plot settings
     fig, ax = plt.subplots(figsize=(14, 7))
-    ax.bar(x, big4, width=bar_width, label='Big 4', color='blue', align='center')
-    ax.bar([i + bar_width for i in x], cr4, width=bar_width, label='CR4', color='orange', align='center')
-    ax.bar([i + 2 * bar_width for i in x], kap10, width=bar_width, label='10KAP', color='grey', align='center')
-    
-    # Format the plot
+
+    # Add bars with appropriate colors and patterns
+    ax.bar(x, big4, width=bar_width, label='Big 4', color='darkblue', align='center')
+    ax.bar([i + bar_width for i in x], cr4, width=bar_width, label='CR4', color='lightblue', align='center')
+    ax.bar([i + 2 * bar_width for i in x], kap10, width=bar_width, label='10KAP', color='gray', align='center')
+
+    # Highlight EU in red for all groups
+    eu_index = countries[countries == 'EU'].index[0]
+    ax.bar(eu_index, big4.iloc[eu_index], width=bar_width, color='red', align='center')
+    ax.bar(eu_index + bar_width, cr4.iloc[eu_index], width=bar_width, color='red', align='center')
+    ax.bar(eu_index + 2 * bar_width, kap10.iloc[eu_index], width=bar_width, color='red', align='center')
+
+    # Add labels, title, and legend
     ax.set_xlabel('Country', fontsize=12)
     ax.set_ylabel('Market Share (%)', fontsize=12)
     ax.set_title("Audit Firms' Market Share in Number of PIE Statutory Audits (2021)", fontsize=14)
