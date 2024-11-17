@@ -18,7 +18,7 @@ def main():
     # Calculate market shares for each group
     big4_shares = calculate_big4_market_share(prepared_data)
     kap10_shares = calculate_kap10_market_share(prepared_data)
-    cr4_shares = calculate_cr4_market_share(prepared_data)
+    cr4_shares = calculate_cr4_market_share(prepared_data, big4_shares)  # Pass big4_shares as an argument
     eu_shares = calculate_eu_level_market_shares(prepared_data)
     
     # Combine results into one DataFrame
@@ -92,9 +92,10 @@ def calculate_kap10_market_share(df):
     # Step 5: Return final DataFrame
     return kap10_shares[['trans_report_auditor_state', 'kap10_market_share']]
 
-def calculate_cr4_market_share(df):
+def calculate_cr4_market_share(df, big4_shares):
     """
-    Calculate the CR4 market share for the four largest audit firms in each country.
+    Calculate the CR4 market share for the four largest audit firms in each country,
+    and additionally check for overlap with Big 4 market share.
     """
     # Step 1: Count statutory audits by firm within each country
     firm_totals = (
@@ -123,8 +124,15 @@ def calculate_cr4_market_share(df):
     print("CR4 Market Shares (By Country):")
     print(cr4_shares.head(9))
 
-    # Step 5: Return final DataFrame
-    return cr4_shares[['trans_report_auditor_state', 'cr4_market_share']]
+    # Step 5: Merge with Big 4 market shares to check overlap
+    cr4_shares = cr4_shares.merge(big4_shares, on='trans_report_auditor_state', how='left')
+    cr4_shares['overlap_with_big4'] = cr4_shares['cr4_market_share'] == cr4_shares['big4_market_share']
+
+    print("CR4 Market Shares with Overlap Check (By Country):")
+    print(cr4_shares[['trans_report_auditor_state', 'cr4_market_share', 'big4_market_share', 'overlap_with_big4']])
+
+    # Step 6: Return final DataFrame with overlap flag
+    return cr4_shares[['trans_report_auditor_state', 'cr4_market_share', 'overlap_with_big4']]
 
 def calculate_eu_level_market_shares(df):
     """
