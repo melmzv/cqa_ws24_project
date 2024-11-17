@@ -10,7 +10,7 @@ author:
 date: today
 date-format: MMM D, YYYY [\vspace{1cm}]
 abstract: |
-  | This project uses the TRR 266 Template for Reproducible Empirical Accounting Research (TREAT) to provide an infrastructure for open science-oriented empirical projects. Leveraging Audit Analytics database on Transparency Report data, this repository showcases a reproducible workflow that integrates Python scripts for data preparation, analysis, and visualization. The project replicates and extends findings from the European Commission’s 2024 report by analyzing and visualizing audit firms’ Big 4, CR4, and 10KAP  market shares in the number of PIE statutory audits for 2021 across EU countries and at the EU level. The results include a detailed breakdown of market concentration trends, offering insights into the dominance of major audit firms across different jurisdictions. In doing so, it documents and discusses the research design choices made and the variations between the original and reproduced results. This code base, adapted from TREAT, provides an overview of how the template can be used for this specific project and how to structure a reproducible empirical research project.
+  | This project uses the TRR 266 Template for Reproducible Empirical Accounting Research (TREAT) to provide an infrastructure for open science-oriented empirical projects. Leveraging the Audit Analytics database on Transparency Report data, this repository showcases a reproducible workflow that integrates Python scripts for data preparation, analysis, and visualization. The project replicates and extends findings from the European Commission’s 2024 report by analyzing and visualizing Big 4, CR4, and 10KAP audit firms’ market shares in the number of public interest entity statutory audits for 2021 across EU countries and at the EU level. The results include a detailed breakdown of market concentration trends, offering insights into the dominance of major audit firms across different jurisdictions. In doing so, the project documents and discusses the research design choices made and the variations between the original and reproduced results. This code base, adapted from TREAT, provides an overview of how the template can be used for this specific project and demonstrates how to structure a reproducible empirical research project.
   | \vspace{6cm}
 bibliography: references.bib
 biblio-style: apsr
@@ -98,13 +98,13 @@ def prep_latex_table(df, caption=None, label=None, fontsize='\\fontsize{11}{13}\
 
 # List of Abbreviations
 \setlength{\parindent}{0em}
-
-**CFO**: Operating Cash Flow  
-**EM**: Earnings Management  
+**EC**: European Commission  
+**EU**: European Union  
 **IDE**: Integrated Development Environment  
-**SIC**: Standard Industrial Classification  
-**UK**: United Kingdom  
-**US**: United States  
+**NCA**:: National Competent Authority  
+**PIE**: Public interest entity  
+**TREAT**: TRR 266 Template for Reproducible Empirical Accounting Research  
+**UK**: United Kingdom   
 **WRDS**: Wharton Research Data Services  
 
 \setlength{\parindent}{4em} 
@@ -114,15 +114,15 @@ def prep_latex_table(df, caption=None, label=None, fontsize='\\fontsize{11}{13}\
 # Introduction {#sec-introduction}
 The aim of this paper is to illustrate the use of open science tools in empirical accounting research.
 
-The original study by @Leuz_2003 examines systematic differences in earnings management (EM) across 31 countries and proposes that these differences are influenced by the level of investor protection. Specifically, the paper argues that stronger investor protection reduces earnings management by limiting insiders’ ability to acquire private control benefits.
+The original report by @EC_Report_2024 examines trends in the European Union (EU) market for statutory audits of public interest entities (PIEs) from 2019 to 2021, with a focus on market concentration, audit quality risks, and the effectiveness of audit committees. This report is the third check-in on how the European Union's (EU’s) auditing standards and market structures are evolving since the *Article 27 of Regulation (EU) No 537/2014* [-@EU_Regulation_537_2014] was introduced. A statutory audit is a legally mandated evaluation of financial records aimed at certifying the accuracy of companies’ financial statements, thereby enhancing stakeholder confidence and supporting the orderly functioning of markets [@EC_Auditing_Website]. The report by @EC_Report_2024 argues that while statutory audits play a crucial role in fostering confidence in financial markets, persistent market concentration and quality deficiencies highlight the need for strengthened oversight and improved transparency to ensure the resilience and reliability of audit practices across the EU.
 
-This paper presents the replication of Table 2 Panel A from the seminal study by @Leuz_2003. The original table provides descriptive statistics for four individual earnings management measures and the aggregate earnings management score across various countries, highlighting significant differences in EM practices between Continental Europe, Asia, and Anglo-American countries.
+This paper replicates Figure 3 from the European Commission’s [-@EC_Report_2024] report, which visualizes the market shares of audit firms — Big 4, CR4, and 10KAP — by the number of PIE statutory audits conducted in 2021 across EU countries and at the EU level. The replication provides insights into market concentration and the dominance of major audit firms, reflecting variations in audit practices and competition across Europe.
 
-The project uses data from the Worldscope Database via Wharton Research Data Services (WRDS), focusing on fiscal years 1990 to 1999 and covering multiple countries. The replication aims to follow the research design by @Leuz_2003 as closely as possible with the available data. It employs four individual earnings management measures: earnings smoothing using accruals (EM1), the correlation between changes in accruals and cash flows (EM2), the magnitude of accruals (EM3), and the ratio of small profits to small losses (EM4). These measures are combined to create an aggregate earnings management score, providing a comprehensive overview of EM practices.
+The project uses data from the Audit Analytics database on Transparency Reports via Wharton Research Data Services (WRDS) for the year 2021, covering PIEs across EU countries. The replication closely follows the methodology outlined by @EC_Report_2024. It focuses on three key market concentration measures: the market share of the Big 4 audit firms, the CR4 market share for the largest four firms in each country, and the 10KAP market share, which includes the Big 4 and additional major networks. These measures provide a detailed assessment of audit firm dominance and competition, offering valuable insights into the structure and dynamics of the statutory audit market in Europe.
 
-The analysis includes pulling and filtering the relevant financial data, identifying relevant companies and countries based on the authors’ requirements, calculating the EM measures for each country, and examining the relationship between each country’s aggregate earnings management score and its ranking. Explicit assumptions were made whenever the paper by @Leuz_2003 was unclear on how to proceed. The entire Python computation code for EM measures is available in `code/python/do_analysis.py` for detailed review if necessary. This paper focuses on the replication process and discussion of the results.
+The analysis involves gathering and filtering Transparency Report data, identifying relevant PIEs and EU countries, and calculating the Big 4, CR4, and 10KAP market shares for each country as well as at the EU level. Explicit assumptions were made whenever the document by @EC_Report_2024 was unclear on how to proceed. The entire Python computation code for market share calculations is available in `code/python/do_analysis.py` for detailed review if necessary. This paper focuses on the replication process, presenting visualizations, and discussing the results.
 
-The replicated table is shown below, followed by the research design choices and assumptions in @sec-research_design_assumptions, documentation of the replication steps in @sec-replication_steps, a detailed results comparison in @sec-results, and concluding remarks in @sec-conclusion.
+The replicated Figure 3 from original report by @EC_Report_2024 is shown below, followed by the research design choices and assumptions in @sec-research_design_assumptions, documentation of the replication steps in @sec-replication_steps, a detailed results comparison in @sec-results, and concluding remarks in @sec-conclusion.
 
 Table 1 provides descriptive statistics for the four individual earnings management measures as well as the aggregate earnings management score, where countries are sorted in descending order based on their aggregate score. The discussion of replication findings is presented in @sec-results.
 ```{python}
