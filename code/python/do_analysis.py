@@ -31,7 +31,7 @@ def main():
     # Plot the results
     plot_market_shares(market_shares, cfg['figure_save_path'])
     
-    log.info("Performing main analysis...Done!")
+    log.info("Performing main analysis and plotting...Done!")
 
 def load_data(data_path):
     """
@@ -204,37 +204,43 @@ def save_market_shares(df, save_path):
     df.to_csv(save_path, index=False)
     log.info(f"Market shares saved to {save_path}.")
 
-def plot_market_shares(df, save_path):
+def plot_market_shares(market_shares, save_path):
     """
-    Plot the market shares for Big 4, 10KAP, and CR4.
+    Create a bar chart for Big 4, CR4, and 10KAP market shares by country (including EU).
     """
-    # Filter out the EU-level row for country-specific plotting
-    country_data = df[df['trans_report_auditor_state'] != 'EU']
+    # Sort by country, placing EU at the end for clarity
+    market_shares = market_shares.sort_values(by='trans_report_auditor_state', key=lambda col: col != 'EU')
+
+    # Extract data for plotting
+    countries = market_shares['trans_report_auditor_state']
+    big4 = market_shares['big4_market_share']
+    cr4 = market_shares['cr4_market_share']
+    kap10 = market_shares['kap10_market_share']
     
-    # Set up the bar chart
+    # Plot settings
+    x = range(len(countries))
+    bar_width = 0.25
+
     fig, ax = plt.subplots(figsize=(14, 7))
-    x = country_data['trans_report_auditor_state']
-    width = 0.3
+    ax.bar(x, big4, width=bar_width, label='Big 4', color='blue', align='center')
+    ax.bar([i + bar_width for i in x], cr4, width=bar_width, label='CR4', color='orange', align='center')
+    ax.bar([i + 2 * bar_width for i in x], kap10, width=bar_width, label='10KAP', color='grey', align='center')
     
-    # Plot Big 4, CR4, and 10KAP market shares
-    ax.bar(x, country_data['big4_market_share'], width, label='Big 4', align='center')
-    ax.bar(x, country_data['cr4_market_share'], width, label='CR4', align='edge')
-    ax.bar(x, country_data['kap10_market_share'], width, label='10KAP', align='edge', color='lightgrey', alpha=0.7)
-    
-    # Add labels and title
-    ax.set_xlabel('Country')
-    ax.set_ylabel('Market Share (%)')
-    ax.set_title('Audit Firms\' Market Share in Number of PIE Statutory Audits (2021)')
+    # Format the plot
+    ax.set_xlabel('Country', fontsize=12)
+    ax.set_ylabel('Market Share (%)', fontsize=12)
+    ax.set_title("Audit Firms' Market Share in Number of PIE Statutory Audits (2021)", fontsize=14)
+    ax.set_xticks([i + bar_width for i in x])
+    ax.set_xticklabels(countries, rotation=90)
     ax.legend()
-    ax.set_xticks(range(len(x)))
-    ax.set_xticklabels(x, rotation=90)
     
     # Save the figure
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     plt.tight_layout()
     plt.savefig(save_path)
     log.info(f"Figure saved to {save_path}.")
-    
+    plt.show()
 
+    
 if __name__ == "__main__":
     main()
