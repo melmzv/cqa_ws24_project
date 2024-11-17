@@ -244,7 +244,7 @@ def plot_market_shares(market_shares, save_path):
     # Add labels, title, and legend
     ax.set_xlabel('Country', fontsize=12)
     ax.set_ylabel('Market Share (%)', fontsize=12)
-    ax.set_title("Replication of Figure 3: Audit Firms' Market Share in Number of PIE Statutory Audits (2021)", fontsize=14)
+    ax.set_title("Replication of Figure 3 from EC Report (2024): Audit Firms' Market Share in Number of PIE Statutory Audits (2021)", fontsize=14)
     ax.set_xticks([i + bar_width for i in x])
     ax.set_xticklabels(countries, rotation=90)
     
