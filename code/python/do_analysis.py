@@ -12,7 +12,7 @@ def main():
     # Load the configuration file
     cfg = read_config('config/do_analysis_cfg.yaml')
     
-    # Load the prepared data using the path from the config file
+    # Load the prepared transparency data using the path from the config file
     prepared_data = load_data(cfg['prepared_data_save_path'])
     
     # Calculate market shares for each group
@@ -33,8 +33,8 @@ def load_data(data_path):
     """
     Load the prepared transparency data from the specified path.
     """
-    log.info(f"Loading prepared data from {data_path}...")
-    return pd.read_csv(data_path)
+    df = pd.read_csv(data_path)
+    return df
 
 def calculate_big4_market_share(df):
     """
