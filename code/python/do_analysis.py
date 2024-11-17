@@ -228,24 +228,21 @@ def plot_market_shares(market_shares, save_path):
     # Plot settings
     fig, ax = plt.subplots(figsize=(14, 7))
 
-    # Add bars with appropriate colors and patterns
+    # Add bars with appropriate colors
     ax.bar(x, big4, width=bar_width, label='Big 4', color='darkblue', align='center')
     ax.bar([i + bar_width for i in x], cr4, width=bar_width, label='CR4', color='lightblue', align='center')
     ax.bar([i + 2 * bar_width for i in x], kap10, width=bar_width, label='10KAP', color='gray', align='center')
 
-    # Highlight EU in red for all groups
-    eu_index = countries[countries == 'EU'].index[0]
-    ax.bar(eu_index, big4.iloc[eu_index], width=bar_width, color='red', align='center')
-    ax.bar(eu_index + bar_width, cr4.iloc[eu_index], width=bar_width, color='red', align='center')
-    ax.bar(eu_index + 2 * bar_width, kap10.iloc[eu_index], width=bar_width, color='red', align='center')
-
     # Add labels, title, and legend
     ax.set_xlabel('Country', fontsize=12)
     ax.set_ylabel('Market Share (%)', fontsize=12)
-    ax.set_title("Audit Firms' Market Share in Number of PIE Statutory Audits (2021)", fontsize=14)
+    ax.set_title("Replication of Figure 3: Audit Firms' Market Share in Number of PIE Statutory Audits (2021)", fontsize=14)
     ax.set_xticks([i + bar_width for i in x])
     ax.set_xticklabels(countries, rotation=90)
     ax.legend()
+
+    # Position the legend below the graph
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fancybox=True, shadow=True, ncol=3)
     
     # Save the figure
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
