@@ -40,54 +40,90 @@ def calculate_big4_market_share(df):
     """
     Calculate market share for Big 4 by country.
     """
-    country_totals = df.groupby('trans_report_auditor_state')['number_of_disclosed_pies'].sum().reset_index()
-    country_totals.columns = ['trans_report_auditor_state', 'total_pie_audits']
+    # Step 1: Calculate total PIE audits by counting rows per country
+    country_totals = df.groupby('trans_report_auditor_state').size().reset_index(name='total_pie_audits')
+    print("Country Totals (All Audits):")
+    print(country_totals.head(9))
     
+    # Step 2: Filter data for Big 4
     big4_df = df[df['network_group'] == 'Big 4']
-    big4_totals = big4_df.groupby('trans_report_auditor_state')['number_of_disclosed_pies'].sum().reset_index()
-    big4_totals.columns = ['trans_report_auditor_state', 'big4_pie_audits']
+    print("Filtered Big 4 Data:")
+    print(big4_df.head())
     
+    # Step 3: Calculate Big 4 PIE audits by counting rows per country
+    big4_totals = big4_df.groupby('trans_report_auditor_state').size().reset_index(name='big4_pie_audits')
+    print("Big 4 Totals (Audits by Country):")
+    print(big4_totals.head(10))
+    
+    # Step 4: Merge with country totals and calculate market share
     big4_shares = big4_totals.merge(country_totals, on='trans_report_auditor_state')
     big4_shares['big4_market_share'] = (big4_shares['big4_pie_audits'] / big4_shares['total_pie_audits']) * 100
+    print("Big 4 Market Shares:")
+    print(big4_shares.head(10))
     
+    # Step 5: Return final DataFrame
     return big4_shares[['trans_report_auditor_state', 'big4_market_share']]
 
 def calculate_kap10_market_share(df):
     """
-    Calculate market share for 10KAP by country.
+    Calculate market share for 10KAP by country, including Big 4 auditors.
     """
-    country_totals = df.groupby('trans_report_auditor_state')['number_of_disclosed_pies'].sum().reset_index()
-    country_totals.columns = ['trans_report_auditor_state', 'total_pie_audits']
+    # Step 1: Calculate total PIE audits by counting rows per country
+    country_totals = df.groupby('trans_report_auditor_state').size().reset_index(name='total_pie_audits')
+    print("Country Totals (All Audits):")
+    print(country_totals.head())
     
-    kap10_df = df[df['network_group'] == '10KAP']
-    kap10_totals = kap10_df.groupby('trans_report_auditor_state')['number_of_disclosed_pies'].sum().reset_index()
-    kap10_totals.columns = ['trans_report_auditor_state', 'kap10_pie_audits']
+    # Step 2: Filter data for 10KAP (including Big 4)
+    kap10_df = df[df['network_group'].isin(['10KAP', 'Big 4'])]
+    print("Filtered 10KAP Data (Including Big 4):")
+    print(kap10_df.head())
     
+    # Step 3: Calculate 10KAP PIE audits by counting rows per country
+    kap10_totals = kap10_df.groupby('trans_report_auditor_state').size().reset_index(name='kap10_pie_audits')
+    print("10KAP Totals (Audits by Country):")
+    print(kap10_totals.head())
+    
+    # Step 4: Merge with country totals and calculate market share
     kap10_shares = kap10_totals.merge(country_totals, on='trans_report_auditor_state')
     kap10_shares['kap10_market_share'] = (kap10_shares['kap10_pie_audits'] / kap10_shares['total_pie_audits']) * 100
+    print("10KAP Market Shares:")
+    print(kap10_shares.head())
     
+    # Step 5: Return final DataFrame
     return kap10_shares[['trans_report_auditor_state', 'kap10_market_share']]
 
 def calculate_cr4_market_share(df):
     """
     Calculate the CR4 market share for the four largest audit firms in each country.
     """
-    country_totals = df.groupby('trans_report_auditor_state')['number_of_disclosed_pies'].sum().reset_index()
-    country_totals.columns = ['trans_report_auditor_state', 'total_pie_audits']
-    
+    # Step 1: Count statutory audits by firm within each country
     firm_totals = (
-        df.groupby(['trans_report_auditor_state', 'auditor_fkey'])['number_of_disclosed_pies']
-        .sum()
-        .reset_index()
+        df.groupby(['trans_report_auditor_state', 'auditor_fkey'])
+        .size()
+        .reset_index(name='audit_count')
     )
-    
+    print("Firm Totals (Audit Count by Firm and Country):")
+    print(firm_totals.head())
+
+    # Step 2: Identify the top 4 firms in each country and sum their audit counts
     top_4_audits = firm_totals.groupby('trans_report_auditor_state').apply(
-        lambda x: x.nlargest(4, 'number_of_disclosed_pies')['number_of_disclosed_pies'].sum()
-    ).reset_index(name='cr4_pie_audits')
-    
+        lambda x: x.nlargest(4, 'audit_count')['audit_count'].sum()
+    ).reset_index(name='cr4_audit_count')
+    print("Top 4 Audits (Summed for Each Country):")
+    print(top_4_audits.head())
+
+    # Step 3: Count total statutory audits per country
+    country_totals = df.groupby('trans_report_auditor_state').size().reset_index(name='total_audit_count')
+    print("Total Audits (By Country):")
+    print(country_totals.head())
+
+    # Step 4: Merge with total audits and calculate market share
     cr4_shares = top_4_audits.merge(country_totals, on='trans_report_auditor_state')
-    cr4_shares['cr4_market_share'] = (cr4_shares['cr4_pie_audits'] / cr4_shares['total_pie_audits']) * 100
-    
+    cr4_shares['cr4_market_share'] = (cr4_shares['cr4_audit_count'] / cr4_shares['total_audit_count']) * 100
+    print("CR4 Market Shares (By Country):")
+    print(cr4_shares.head(9))
+
+    # Step 5: Return final DataFrame
     return cr4_shares[['trans_report_auditor_state', 'cr4_market_share']]
 
 def calculate_eu_level_market_shares(df):
