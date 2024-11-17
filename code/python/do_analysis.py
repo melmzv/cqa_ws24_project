@@ -1,5 +1,6 @@
 # We start by loading the libraries that we will use in this analysis.
 import os
+import pickle
 import pandas as pd
 import matplotlib.pyplot as plt
 from utils import read_config, setup_logging
@@ -206,11 +207,12 @@ def save_market_shares(df, save_path):
 
 def plot_market_shares(market_shares, save_path):
     """
-    Create a patterned bar chart for Big 4, CR4, and 10KAP market shares by country (including EU).
+    Create a patterned bar chart for Big 4, CR4, and 10KAP market shares by country (including EU),
+    and save the figure as both PNG and pickle formats.
     """
     # Sort the market shares to match the desired country order
-    countries_order = ['DK', 'CY', 'FI', 'SE', 'LU', 'BE', 'EE', 'AT', 'NO', 'NL', 'IT', 
-                       'ES', 'IE', 'DE', 'MT', 'LT', 'HU', 'EU', 'LV', 'CZ', 'HR', 'SI', 
+    countries_order = ['DK', 'CY', 'FI', 'SE', 'LU', 'BE', 'EE', 'AT', 'NO', 'NL', 'IT',
+                       'ES', 'IE', 'DE', 'MT', 'LT', 'HU', 'EU', 'LV', 'CZ', 'HR', 'SI',
                        'SK', 'FR', 'PL', 'PT', 'EL', 'RO', 'BG']
     market_shares['sort_order'] = market_shares['trans_report_auditor_state'].apply(lambda x: countries_order.index(x))
     market_shares = market_shares.sort_values(by='sort_order')
@@ -251,13 +253,19 @@ def plot_market_shares(market_shares, save_path):
     # Define legend below the graph
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), fancybox=True, shadow=True, ncol=3)
     
-    # Save the figure
+    # Save the figure as a PNG
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     plt.tight_layout()
     plt.savefig(save_path)
     log.info(f"Figure saved to {save_path}.")
+    
+    # Save the figure as a pickle file
+    pickle_path = save_path.replace('.png', '.pickle')
+    with open(pickle_path, 'wb') as f:
+        pickle.dump(fig, f)
+    log.info(f"Figure saved as pickle to {pickle_path}.")
+    
     plt.show()
-
     
 if __name__ == "__main__":
     main()

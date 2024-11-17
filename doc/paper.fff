@@ -1,0 +1,26 @@
+\begin{figure}
+
+\centering{
+
+\centering{
+
+\includegraphics{paper_files/figure-pdf/fig-market-shares-output-1.pdf}
+
+}
+
+\subcaption{\label{fig-market-shares-1}Replicated Figure 3: Audit Firms'
+Market Shares in the EU for 2021}
+
+\centering{
+
+\includegraphics{paper_files/figure-pdf/fig-market-shares-output-2.pdf}
+
+}
+
+\subcaption{\label{fig-market-shares-2}}
+
+}
+
+\caption{\label{fig-market-shares}}
+
+\end{figure}

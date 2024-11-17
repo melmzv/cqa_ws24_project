@@ -43,55 +43,7 @@ header-includes:
 
 \pagebreak
 
-```{python}
-#| echo: false
-#| output: false
 
-import pickle
-import pandas as pd
-
-# Load the results from the existing pickle file for table_1
-with open('../data/generated/table_1.pickle', 'rb') as f:
-    results = pickle.load(f)
-
-# Load the results from the new pickle file for final_table and summary_stats
-with open('../output/em_results.pickle', 'rb') as f:
-    em_results = pickle.load(f)
-
-def escape_special_characters(df):
-    df.columns = [col.replace('_', '\\_').replace('#', '\\#') for col in df.columns]
-    return df
-
-# Custom formatter function
-def custom_float_format(x):
-    return f"{x:.3f}".lstrip('0') if pd.notnull(x) else ""
-
-def prep_latex_table(df, caption=None, label=None, fontsize='\\fontsize{11}{13}\\selectfont', description=None):
-    df = escape_special_characters(df.reset_index(drop=True))  # Drop the index column from output tables for better readability
-    num_columns = len(df.columns)
-    column_format = 'l' + 'r' * (num_columns - 1)
-    
-    latex_table = df.to_latex(
-        column_format=column_format,
-        index=False, 
-        float_format=custom_float_format,
-        escape=False  # Important to disable escaping so LaTeX commands in column names are respected
-    )
-    
-    # Construct description to the table
-    full_caption = f"{caption}\\\\\n\\textnormal{{{description}}}" if description else caption
-    
-    latex_table_lines = [
-        "\\begin{table}[htbp]",
-        "\\centering",
-        fontsize,  # Set font size for the table
-        latex_table,
-        f"\\caption{{{full_caption}}}" if full_caption else "",
-        f"\\label{{{label}}}" if label else "",
-        "\\end{table}"
-    ]
-    return "\n".join(line for line in latex_table_lines if line)
-```
 
 \pagebreak
 
@@ -122,34 +74,24 @@ The project uses data from the Audit Analytics database on Transparency Reports 
 
 The analysis involves gathering and filtering Transparency Report data, identifying relevant PIEs and EU countries, and calculating the Big 4, CR4, and 10KAP market shares for each country as well as at the EU level. Explicit assumptions were made whenever the document by @EC_Report_2024 was unclear on how to proceed. The entire Python computation code for market share calculations is available in `code/python/do_analysis.py` for detailed review if necessary. This paper focuses on the replication process, presenting visualizations, and discussing the results.
 
-The replicated Figure 3 from original report by @EC_Report_2024 is shown below, followed by the research design choices and assumptions in @sec-research_design_assumptions, documentation of the replication steps in @sec-replication_steps, a detailed results comparison in @sec-results, and concluding remarks in @sec-conclusion.
+The replicated figure from original report by @EC_Report_2024 is shown below, followed by the research design choices and assumptions in @sec-research_design_assumptions, documentation of the replication steps in @sec-replication_steps, a detailed results comparison in @sec-results, and concluding remarks in @sec-conclusion.
 
-Table 1 provides descriptive statistics for the four individual earnings management measures as well as the aggregate earnings management score, where countries are sorted in descending order based on their aggregate score. The discussion of replication findings is presented in @sec-results.
+Figure 1 illustrates the market shares of audit firms — Big 4, CR4, and 10KAP — for the number of PIE statutory audits conducted in 2021. Countries are sorted in a specific order reflecting the replication of Figure 3 from the European Commission’s 2024 report. The discussion of replication findings is presented in @sec-results.
 ```{python}
-#| label: final_combined_table
+#| label: fig-market-shares
+#| fig-cap: "Replicated Figure 3: Audit Firms' Market Shares in the EU for 2021"
+#| fig-align: center
 #| echo: false
-#| output: asis
 
-# Rename the columns to ensure consistency with paper
-em_results['final_combined_table'].rename(columns={
-    'item6026': 'Country',
-    'EM1': 'EM1 (−)',
-    'EM2': 'EM2 (−)',
-    'EM3': 'EM3 (+)',
-    'EM4': 'EM4 (+)',
-    'Aggregate_EM_Score': 'Aggregate EM score'
-}, inplace=True)
+import pickle
+import matplotlib.pyplot as plt
 
-print(prep_latex_table(
-    em_results['final_combined_table'], 
-    caption='Replicated table - Country scores for earnings management measures (Sorted by aggregate earnings management)',
-    label='tab:final_combined_table',
-    description = (
-    "\\fontsize{10pt}{12pt}\\selectfont " 
-    "The variables are computed from 123,469 firm-year observations for fiscal years 1990 to 1999 across 31 countries and 18,040 non-financial firms. Data are obtained from the Worldscope Database (July 2024 version). The definitions and calculations of EM1-EM4, as well as the aggregate score, are thoroughly presented in Section 4. The sign in the column heading indicates whether higher scores for the respective EM measure imply more earnings management (+) or less earnings management (−)."
-    )
+# Load the figure from the pickle file
+with open('../output/figure3_market_shares.pickle', 'rb') as f:
+    fig = pickle.load(f)
 
-))
+# Display the figure
+fig
 ```
 
 # Research Design Choices and Assumptions {#sec-research_design_assumptions}
@@ -197,18 +139,6 @@ During the preparation step, 8,265 firms and 20,521 firm-year observations (all 
 Given that the number of observations in this project is significantly higher than in the original study, Table 1 from @Leuz_2003 was partially replicated (focusing only on columns related to countries and firm-year observations) to highlight specific discrepancies that could arise for certain countries. So, the results in Table 2 show a higher number of firm-year observations for almost all countries compared to the paper by @Leuz_2003, likely due to database updates leading to a more comprehensive dataset. The trend in the number of firm-year observations across countries is consistent with the original study, with larger capital markets like Japan, the United Kingdom, and the United States having the highest numbers. The distribution of observations in my dataset shows higher mean and median values compared to the paper by @Leuz_2003, indicating a greater overall number of firm-year observations, while the minimum values are relatively close, suggesting that the overall distribution of observations across countries remains broadly similar.
 
 However, there are significant discrepancies, particularly for the United States, which has 41,585 observations compared to 3,792 in the original study. @Leuz_2003 focused only on S&P 500 companies for the U.S., while this analysis uses a more comprehensive dataset from the Worldscope database, which includes detailed financial statement data and profile data on public companies globally. This broader scope results in a higher number of firm-year observations for the United States. Despite the differences in absolute numbers, the relative trends across countries align with the original paper.
-
-```{python}
-#| label: table_1 
-#| echo: false
-#| output: asis
-
-print(prep_latex_table(
-    results['table_1'],
-    caption='Replicated table - Descriptive statistics: Number of firm-year observations per country',
-    label='tab:table_1'
-))
-```
 
 ## Step 3: Analysis Implementation and Table Reproduction
 In this replication step, the calculation of the EM measures is implemented according to the methodology described by @Leuz_2003. The study employs four distinct proxies that capture different dimensions of earnings management, such as earnings smoothing and accrual manipulations. These measures are used to assess the pervasiveness of earnings management across countries. This step ensures that all statistical methods and groupings are accurately replicated, following the paper’s approach to capture the extent to which corporate insiders use accounting discretion to obscure their firm’s true economic performance.
