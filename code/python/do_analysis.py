@@ -1,5 +1,5 @@
 # We start by loading the libraries that we will use in this analysis.
-import pickle
+import os
 import pandas as pd
 from utils import read_config, setup_logging
 
@@ -15,8 +15,14 @@ def main():
     # Load the prepared data using the path from the config file
     prepared_data = load_data(cfg['prepared_data_save_path'])
     
-    # Calculate market shares for Big 4, 10KAP, and CR4
-    market_shares = calculate_market_shares(prepared_data)
+    # Calculate market shares for each group
+    big4_shares = calculate_big4_market_share(prepared_data)
+    kap10_shares = calculate_kap10_market_share(prepared_data)
+    cr4_shares = calculate_cr4_market_share(prepared_data)
+    eu_shares = calculate_eu_level_market_shares(prepared_data)
+    
+    # Combine results into one DataFrame
+    market_shares = combine_market_shares(big4_shares, kap10_shares, cr4_shares, eu_shares)
     
     # Save the aggregated market shares to a CSV file
     save_market_shares(market_shares, cfg['aggregated_data_save_path'])
@@ -28,75 +34,60 @@ def load_data(data_path):
     Load the prepared transparency data from the specified path.
     """
     log.info(f"Loading prepared data from {data_path}...")
-    df = pd.read_csv(data_path)
-    return df
+    return pd.read_csv(data_path)
 
-def calculate_market_shares(df):
+def calculate_big4_market_share(df):
     """
-    Calculate market shares for Big 4, 10KAP, and CR4 for each country and for the EU as a whole.
+    Calculate market share for Big 4 by country.
     """
-    # Group by country and calculate total PIE audits
-    country_totals = (
-        df.groupby('trans_report_auditor_state')['number_of_disclosed_pies']
-        .sum()
-        .reset_index(name='total_pie_audits')
-    )
+    country_totals = df.groupby('trans_report_auditor_state')['number_of_disclosed_pies'].sum().reset_index()
+    country_totals.columns = ['trans_report_auditor_state', 'total_pie_audits']
     
-    # Big 4 Market Share
-    big4_shares = calculate_group_market_share(df, 'Big 4', country_totals)
+    big4_df = df[df['network_group'] == 'Big 4']
+    big4_totals = big4_df.groupby('trans_report_auditor_state')['number_of_disclosed_pies'].sum().reset_index()
+    big4_totals.columns = ['trans_report_auditor_state', 'big4_pie_audits']
     
-    # 10KAP Market Share
-    kap10_shares = calculate_group_market_share(df, '10KAP', country_totals)
+    big4_shares = big4_totals.merge(country_totals, on='trans_report_auditor_state')
+    big4_shares['big4_market_share'] = (big4_shares['big4_pie_audits'] / big4_shares['total_pie_audits']) * 100
     
-    # CR4 Market Share
-    cr4_shares = calculate_cr4_market_share(df, country_totals)
-    
-    # Combine all market shares into one DataFrame
-    market_shares = big4_shares.merge(kap10_shares, on='trans_report_auditor_state', how='outer')
-    market_shares = market_shares.merge(cr4_shares, on='trans_report_auditor_state', how='outer')
-    
-    # Calculate EU-level market shares
-    eu_market_shares = calculate_eu_level_market_shares(df)
-    market_shares = pd.concat([market_shares, eu_market_shares], ignore_index=True)
-    
-    log.info("Market shares calculated successfully.")
-    return market_shares
+    return big4_shares[['trans_report_auditor_state', 'big4_market_share']]
 
-def calculate_group_market_share(df, group_name, country_totals):
+def calculate_kap10_market_share(df):
     """
-    Calculate market share for a specific network group (Big 4 or 10KAP).
+    Calculate market share for 10KAP by country.
     """
-    group_df = df[df['network_group'] == group_name]
-    group_totals = (
-        group_df.groupby('trans_report_auditor_state')['number_of_disclosed_pies']
-        .sum()
-        .reset_index(name=f'{group_name.lower()}_pie_audits')
-    )
-    group_shares = group_totals.merge(country_totals, on='trans_report_auditor_state')
-    group_shares[f'{group_name.lower()}_market_share'] = (
-        group_shares[f'{group_name.lower()}_pie_audits'] / group_shares['total_pie_audits'] * 100
-    )
-    return group_shares[['trans_report_auditor_state', f'{group_name.lower()}_market_share']]
+    country_totals = df.groupby('trans_report_auditor_state')['number_of_disclosed_pies'].sum().reset_index()
+    country_totals.columns = ['trans_report_auditor_state', 'total_pie_audits']
+    
+    kap10_df = df[df['network_group'] == '10KAP']
+    kap10_totals = kap10_df.groupby('trans_report_auditor_state')['number_of_disclosed_pies'].sum().reset_index()
+    kap10_totals.columns = ['trans_report_auditor_state', 'kap10_pie_audits']
+    
+    kap10_shares = kap10_totals.merge(country_totals, on='trans_report_auditor_state')
+    kap10_shares['kap10_market_share'] = (kap10_shares['kap10_pie_audits'] / kap10_shares['total_pie_audits']) * 100
+    
+    return kap10_shares[['trans_report_auditor_state', 'kap10_market_share']]
 
-def calculate_cr4_market_share(df, country_totals):
+def calculate_cr4_market_share(df):
     """
     Calculate the CR4 market share for the four largest audit firms in each country.
     """
-    # Group by country and auditor to get PIE audits by firm
+    country_totals = df.groupby('trans_report_auditor_state')['number_of_disclosed_pies'].sum().reset_index()
+    country_totals.columns = ['trans_report_auditor_state', 'total_pie_audits']
+    
     firm_totals = (
         df.groupby(['trans_report_auditor_state', 'auditor_fkey'])['number_of_disclosed_pies']
         .sum()
         .reset_index()
     )
     
-    # Identify the top 4 firms in each country
     top_4_audits = firm_totals.groupby('trans_report_auditor_state').apply(
         lambda x: x.nlargest(4, 'number_of_disclosed_pies')['number_of_disclosed_pies'].sum()
     ).reset_index(name='cr4_pie_audits')
     
-    # Merge with country totals and calculate CR4 market share
     cr4_shares = top_4_audits.merge(country_totals, on='trans_report_auditor_state')
     cr4_shares['cr4_market_share'] = (cr4_shares['cr4_pie_audits'] / cr4_shares['total_pie_audits']) * 100
+    
     return cr4_shares[['trans_report_auditor_state', 'cr4_market_share']]
 
 def calculate_eu_level_market_shares(df):
@@ -107,10 +98,8 @@ def calculate_eu_level_market_shares(df):
     big4_total = df[df['network_group'] == 'Big 4']['number_of_disclosed_pies'].sum()
     kap10_total = df[df['network_group'] == '10KAP']['number_of_disclosed_pies'].sum()
     
-    # Calculate CR4 at the EU level
     firm_totals = df.groupby('auditor_fkey')['number_of_disclosed_pies'].sum().nlargest(4).sum()
     
-    # Assemble EU-level market shares
     eu_market_shares = pd.DataFrame({
         'trans_report_auditor_state': ['EU'],
         'big4_market_share': [big4_total / eu_totals * 100],
@@ -119,11 +108,20 @@ def calculate_eu_level_market_shares(df):
     })
     return eu_market_shares
 
+def combine_market_shares(big4_shares, kap10_shares, cr4_shares, eu_shares):
+    """
+    Combine market shares for Big 4, 10KAP, CR4, and EU-level into one DataFrame.
+    """
+    market_shares = big4_shares.merge(kap10_shares, on='trans_report_auditor_state', how='outer')
+    market_shares = market_shares.merge(cr4_shares, on='trans_report_auditor_state', how='outer')
+    market_shares = pd.concat([market_shares, eu_shares], ignore_index=True)
+    return market_shares
+
 def save_market_shares(df, save_path):
     """
     Save the aggregated market shares to a CSV file.
     """
-    log.info(f"Saving aggregated market shares to {save_path}...")
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
     df.to_csv(save_path, index=False)
     log.info(f"Market shares saved to {save_path}.")
 
