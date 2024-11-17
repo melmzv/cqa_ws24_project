@@ -12,7 +12,7 @@ def main():
     # Load the configuration file
     cfg = read_config('config/do_analysis_cfg.yaml')
     
-    # Load the prepared data
+    # Load the prepared data using the path from the config file
     prepared_data = load_data(cfg['prepared_data_save_path'])
     
     # Calculate market shares for Big 4, 10KAP, and CR4
@@ -21,7 +21,7 @@ def main():
     # Save the aggregated market shares to a CSV file
     save_market_shares(market_shares, cfg['aggregated_data_save_path'])
     
-    log.info("Performing main analysis for Figure 3 replication... Done!")
+    log.info("Performing main analysis...Done!")
 
 def load_data(data_path):
     """
