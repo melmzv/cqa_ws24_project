@@ -95,7 +95,7 @@ def calculate_kap10_market_share(df):
 def calculate_cr4_market_share(df, big4_shares):
     """
     Calculate the CR4 market share for the four largest audit firms in each country,
-    and additionally check for overlap with Big 4 market share.
+    and check for overlap with Big 4 market share.
     """
     # Step 1: Count statutory audits by firm within each country
     firm_totals = (
@@ -131,25 +131,56 @@ def calculate_cr4_market_share(df, big4_shares):
     print("CR4 Market Shares with Overlap Check (By Country):")
     print(cr4_shares[['trans_report_auditor_state', 'cr4_market_share', 'big4_market_share', 'overlap_with_big4']])
 
-    # Step 6: Return final DataFrame with overlap flag
+    # Step 6: Calculate the number of countries with overlap
+    overlap_count = cr4_shares['overlap_with_big4'].sum()
+    print(f"Number of countries with CR4 overlapping with Big 4: {overlap_count}")
+
+    # Step 7: Return final DataFrame with overlap flag
     return cr4_shares[['trans_report_auditor_state', 'cr4_market_share', 'overlap_with_big4']]
 
 def calculate_eu_level_market_shares(df):
     """
-    Calculate EU-level market shares for Big 4, 10KAP, and CR4.
+    Calculate EU-level market shares for Big 4, 10KAP, and CR4 using statutory audit counts.
     """
-    eu_totals = df['number_of_disclosed_pies'].sum()
-    big4_total = df[df['network_group'] == 'Big 4']['number_of_disclosed_pies'].sum()
-    kap10_total = df[df['network_group'] == '10KAP']['number_of_disclosed_pies'].sum()
-    
-    firm_totals = df.groupby('auditor_fkey')['number_of_disclosed_pies'].sum().nlargest(4).sum()
-    
+    # Step 1: Calculate total statutory audits in the EU by counting rows
+    eu_totals = len(df)
+    print(f"Total Statutory Audits in the EU: {eu_totals}")
+
+    # Step 2: Filter data for Big 4 and calculate total audits
+    big4_df = df[df['network_group'] == 'Big 4']
+    big4_total = len(big4_df)
+    print(f"Total Big 4 Audits in the EU: {big4_total}")
+
+    # Step 3: Filter data for 10KAP (including Big 4) and calculate total audits
+    kap10_df = df[df['network_group'].isin(['10KAP', 'Big 4'])]
+    kap10_total = len(kap10_df)
+    print(f"Total 10KAP Audits in the EU: {kap10_total}")
+
+    # Step 4: Identify the top 4 firms in the EU (CR4) based on audit counts
+    firm_totals = df.groupby('auditor_fkey').size().reset_index(name='audit_count')
+    print("Total Audits by Firm in the EU:")
+    print(firm_totals.head())
+
+    top_4_audits = firm_totals.nlargest(4, 'audit_count')['audit_count'].sum()
+    print(f"Total Audits by Top 4 Firms (CR4) in the EU: {top_4_audits}")
+
+    # Step 5: Calculate market shares for Big 4, 10KAP, and CR4
+    big4_market_share = (big4_total / eu_totals) * 100
+    kap10_market_share = (kap10_total / eu_totals) * 100
+    cr4_market_share = (top_4_audits / eu_totals) * 100
+    print(f"Big 4 Market Share in the EU: {big4_market_share:.2f}%")
+    print(f"10KAP Market Share in the EU: {kap10_market_share:.2f}%")
+    print(f"CR4 Market Share in the EU: {cr4_market_share:.2f}%")
+
+    # Step 6: Create a DataFrame with EU-level market shares
     eu_market_shares = pd.DataFrame({
         'trans_report_auditor_state': ['EU'],
-        'big4_market_share': [big4_total / eu_totals * 100],
-        'kap10_market_share': [kap10_total / eu_totals * 100],
-        'cr4_market_share': [firm_totals / eu_totals * 100]
+        'big4_market_share': [big4_market_share],
+        'kap10_market_share': [kap10_market_share],
+        'cr4_market_share': [cr4_market_share]
     })
+
+    # Step 7: Return the EU-level market shares DataFrame
     return eu_market_shares
 
 def combine_market_shares(big4_shares, kap10_shares, cr4_shares, eu_shares):
