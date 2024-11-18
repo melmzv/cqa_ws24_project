@@ -1,3 +1,4 @@
 prepared_data_save_path: 'data/generated/prepared_transparency_data.csv'
 aggregated_data_save_path: 'output/aggregated_market_shares.csv'
 figure_save_path: 'output/figure3_market_shares.png'
+pickle_save_path: 'output/figure3_market_shares.pickle'

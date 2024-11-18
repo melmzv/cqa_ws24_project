@@ -30,7 +30,7 @@ def main():
     save_market_shares(market_shares, cfg['aggregated_data_save_path'])
 
     # Plot the results
-    plot_market_shares(market_shares, cfg['figure_save_path'])
+    plot_market_shares(market_shares, cfg['figure_save_path'], cfg['pickle_save_path'])
     
     log.info("Performing main analysis and plotting...Done!")
 
@@ -205,7 +205,7 @@ def save_market_shares(df, save_path):
     df.to_csv(save_path, index=False)
     log.info(f"Market shares saved to {save_path}.")
 
-def plot_market_shares(market_shares, save_path):
+def plot_market_shares(market_shares, save_path, pickle_path):
     """
     Create a patterned bar chart for Big 4, CR4, and 10KAP market shares by country (including EU),
     and save the figure as both PNG and pickle formats.
@@ -246,7 +246,6 @@ def plot_market_shares(market_shares, save_path):
     # Add labels, title, and legend
     ax.set_xlabel('Country', fontsize=12)
     ax.set_ylabel('Market Share (%)', fontsize=12)
-    ax.set_title("Replication of Figure 3 from EC Report (2024): Audit Firms' Market Share in Number of PIE Statutory Audits (2021)", fontsize=14)
     ax.set_xticks([i + bar_width for i in x])
     ax.set_xticklabels(countries, rotation=90)
     
@@ -260,7 +259,7 @@ def plot_market_shares(market_shares, save_path):
     log.info(f"Figure saved to {save_path}.")
     
     # Save the figure as a pickle file
-    pickle_path = save_path.replace('.png', '.pickle')
+    os.makedirs(os.path.dirname(pickle_path), exist_ok=True)
     with open(pickle_path, 'wb') as f:
         pickle.dump(fig, f)
     log.info(f"Figure saved as pickle to {pickle_path}.")
