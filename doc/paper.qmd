@@ -1,6 +1,6 @@
 ---
 title: |
-  | Audit market concentration in the EU:
+  | Audit Market Concentration in the EU:
   | Corporate Decision-Making and Quantitative Analysis - Assignment I\vspace{1cm}
 author:
   - name: Melisa Mazaeva
@@ -19,6 +19,8 @@ format:
     documentclass: article
     number-sections: true
     toc: true
+    lof: true  # Add this line
+    lot: true  # Add this line
 fig_caption: yes
 fontsize: 11pt
 ident: yes
