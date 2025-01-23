@@ -264,7 +264,13 @@ def plot_market_shares(market_shares, save_path, pickle_path):
         pickle.dump(fig, f)
     log.info(f"Figure saved as pickle to {pickle_path}.")
     
-    plt.show()
-    
+    #plt.show() 
+    """
+    as advised by feedback - One minor thing that you should not do, is `plt.show()` in your final script as this freezes
+    up the make process and will require the user to close the plot before make can continue.
+    As you save the plot in pickle and render it in the pdf you do not need to show it in the
+    final script.
+    """
+
 if __name__ == "__main__":
     main()
