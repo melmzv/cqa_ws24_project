@@ -2,7 +2,7 @@
 title: |
   | Earnings Management and Investor Protection:
   | Accounting Reading Group - Assignment III
-author: "Melisa Mazaeva"
+author: "Mel Mzv"
 institute: "Humboldt-Universität zu Berlin – Summer 2024"
 date: today
 fontsize: "9pt"

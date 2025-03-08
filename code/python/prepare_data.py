@@ -1,7 +1,7 @@
 # --- Header -------------------------------------------------------------------
 # Prepare the pulled data for further analysis as per the requirements by EC Report (2024)
 #
-# (C) Melisa Mazaeva - See LICENSE file for details
+# (C) Mel Mzv - See LICENSE file for details
 # ------------------------------------------------------------------------------
 
 import pandas as pd
